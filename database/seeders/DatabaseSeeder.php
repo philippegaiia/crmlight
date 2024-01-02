@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Tag;
 use App\Models\LeadSource;
 use Illuminate\Database\Seeder;
 
@@ -36,6 +37,15 @@ class DatabaseSeeder extends Seeder
 
         foreach ($leadSources as $leadSource) {
             LeadSource::create(['name' => $leadSource]);
+        }
+
+        $tags = [
+            'Priority',
+            'VIP'
+        ];
+
+        foreach ($tags as $tag) {
+            Tag::create(['name' => $tag]);
         }
     }
 }
