@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\LeadSource;
+use App\Models\PipelineStage;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('customers', function (Blueprint $table) {
-            $table->foreignIdFor(LeadSource::class)->nullable()->constrained();
+            $table->foreignIdFor(PipelineStage::class)->nullable()->constrained();
         });
     }
 
@@ -23,9 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('customers', function (Blueprint $table) {
-            $table->dropForeign('lead_source_id');
+            $table->dropForeign('pipeline_stage_id');
         });
-
-
     }
 };

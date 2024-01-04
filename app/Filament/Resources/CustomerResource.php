@@ -2,17 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CustomerResource\Pages;
-use App\Filament\Resources\CustomerResource\RelationManagers;
-use App\Models\Customer;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\FormsComponent;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Customer;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\PipelineStage;
+use Filament\Resources\Resource;
+use Filament\Forms\FormsComponent;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\CustomerResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\CustomerResource\RelationManagers;
 
 class CustomerResource extends Resource
 {
@@ -40,8 +41,15 @@ class CustomerResource extends Resource
                 Forms\Components\Select::make('lead_source_id')
                     ->relationship('leadSource', 'name'),
                 Forms\Components\Select::make('tags')
-                ->relationship('tags', 'name')
-                ->multiple(),
+                    ->relationship('tags', 'name')
+                    ->multiple(),
+                Forms\Components\Select::make('pipeline_stage_id')
+                    ->relationship('pipelineStage', 'name', function($query) {
+                        // it is important to order by position to display the stages in the right order    
+                        $query->orderBy('position', 'asc');
+                    })
+                    // we are setting the default value to the default pipeline stage
+                    ->default(PipelineStage::where('is_default', true)->first()?->id),
             ]);
     }
 
@@ -60,13 +68,15 @@ class CustomerResource extends Resource
                         return $record->first_name . ' '. $record->last_name . $tagsList;
                     })
                     ->html()
-                    ->searchable(['first_name', 'last_name']),
+                    ->searchable(['first_name', 'last_name'])
+                    ->sortable(['last_name']),
                 
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone_number')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('LeadSource.name'),
+                Tables\Columns\TextColumn::make('PipelineStage.name'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
