@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -36,5 +37,20 @@ class Customer extends Model
     public function pipelineStage(): BelongsTo
     {
         return $this->belongsTo(PipelineStage::class);
+    }
+
+    public function pipelineStageLogs(): HasMany
+    {
+        return $this->hasMany(CustomerPiplineStage::class);
+    }
+
+    public static function booted(): void
+    {
+        self::created(function (Customer $customer) {
+            $customer->pipelineStageLogs()->create([
+                'pipeline_stage_id' => $customer->pipeline_stage_id,
+                'user_id' => auth()->check() ? auth()->id() : null
+            ]);
+        });
     }
 }
