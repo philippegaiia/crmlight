@@ -44,6 +44,11 @@ class Customer extends Model
         return $this->hasMany(CustomerPiplineStage::class);
     }
 
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
+
     public static function booted(): void
     {
         self::created(function (Customer $customer) {
@@ -53,4 +58,5 @@ class Customer extends Model
             ]);
         });
     }
+
 }
