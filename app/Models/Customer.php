@@ -49,6 +49,11 @@ class Customer extends Model
         return $this->hasMany(Document::class);
     }
 
+    public function customFields(): HasMany
+    {
+        return $this->hasMany(CustomFieldCustomer::class);
+    }
+
     public static function booted(): void
     {
         self::created(function (Customer $customer) {
